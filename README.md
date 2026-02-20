@@ -48,10 +48,12 @@ This produces `data/pape_dictionary.db` (112 MB) and `data/pape_dictionary.jsonl
 
 ## Web App
 
-Requires Python 3.10+ and Flask.
+Requires Python 3.10+.
 
 ```bash
-pip install flask
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 python3 app.py
 ```
 

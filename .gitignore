@@ -14,5 +14,6 @@ android/release-keystore.jks
 .gradle/
 
 # Python
+.venv/
 __pycache__/
 *.pyc
