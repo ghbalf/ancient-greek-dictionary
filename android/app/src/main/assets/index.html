@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pape Griechisch-Deutsch Wörterbuch</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f5f3ee;
+    color: #2a2a2a;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+  h1 {
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #3a3a3a;
+    font-weight: normal;
+  }
+  h1 em { font-style: italic; font-size: 0.85em; color: #777; }
+  .search-box {
+    position: sticky;
+    top: 0;
+    background: #f5f3ee;
+    padding: 0.5rem 0 0.75rem;
+    z-index: 10;
+  }
+  input[type="search"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    font-size: 1.1rem;
+    font-family: inherit;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background: #fff;
+    outline: none;
+  }
+  input[type="search"]:focus { border-color: #7a8a5a; box-shadow: 0 0 0 2px rgba(122,138,90,0.2); }
+  .modes {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .modes button {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    font-family: sans-serif;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background: #fff;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .modes button:hover { border-color: #999; }
+  .modes button.active {
+    background: #5c6e3f;
+    color: #fff;
+    border-color: #5c6e3f;
+  }
+  .status {
+    text-align: center;
+    padding: 2rem 0;
+    color: #999;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+  .results { margin-top: 0.5rem; }
+  .entry {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .entry-head {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2c4a1a;
+    margin-bottom: 0.3rem;
+  }
+  .entry-body {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+  }
+  .entry-body img { max-width: 100%; height: auto; }
+  .entry-body b { color: #2c4a1a; }
+  .count {
+    font-size: 0.8rem;
+    color: #999;
+    font-family: sans-serif;
+    margin-bottom: 0.5rem;
+  }
+  .help-toggle {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 0.8rem;
+    font-family: sans-serif;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    margin-left: auto;
+  }
+  .help-toggle:hover { color: #555; }
+  .translit-help {
+    display: none;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.6rem 0.8rem;
+    margin-top: 0.4rem;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    color: #555;
+  }
+  .translit-help.open { display: block; }
+  .translit-help table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .translit-help td {
+    padding: 0.15rem 0.3rem;
+    white-space: nowrap;
+  }
+  .translit-help .gr { font-family: Georgia, serif; font-size: 0.95rem; color: #2c4a1a; }
+  .translit-help .lat { font-family: monospace; font-weight: bold; }
+  .translit-help .surprise { background: #fff3e0; border-radius: 3px; }
+  .translit-help caption {
+    text-align: left;
+    font-weight: bold;
+    color: #3a3a3a;
+    padding-bottom: 0.3rem;
+    font-size: 0.85rem;
+  }
+  .translit-help .example {
+    margin-top: 0.4rem;
+    color: #777;
+    font-style: italic;
+  }
+  .translit-help .example span { font-style: normal; font-family: monospace; color: #555; }
+  .front-matter-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+  }
+  .front-matter-nav a {
+    color: #5c6e3f;
+    text-decoration: none;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .front-matter-nav a:hover { background: #eee; }
+  .front-matter-nav a.active { background: #5c6e3f; color: #fff; border-color: #5c6e3f; }
+  .front-matter {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+  .front-matter h3 { font-size: 1.2rem; color: #2c4a1a; margin-bottom: 0.8rem; }
+  .front-matter h5 { font-size: 0.95rem; color: #555; margin-top: 1rem; }
+  .front-matter p { margin-bottom: 0.5rem; text-align: justify; }
+  .front-matter .zenoPR { text-align: right; }
+  .front-matter .zenoTXSpaced { letter-spacing: 0.15em; }
+  .front-matter .zenoPLm0n4 { padding-left: 2rem; text-indent: -2rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Pape Griechisch-Deutsch Wörterbuch <br><em>Handwörterbuch der griechischen Sprache</em></h1>
+  <nav class="front-matter-nav" id="fm-nav"></nav>
+  <div id="fm-content"></div>
+  <div class="search-box">
+    <input type="search" id="q" placeholder="Suche: Griechisch, Transliteration oder Deutsch..." autofocus autocomplete="off">
+    <div class="modes">
+      <button data-mode="auto" class="active">Auto</button>
+      <button data-mode="headword">Stichwort</button>
+      <button data-mode="transliteration">Transliteration</button>
+      <button data-mode="fulltext">Volltext Deutsch</button>
+      <button class="help-toggle" id="help-btn">Transliteration?</button>
+    </div>
+    <div class="translit-help" id="translit-help">
+      <table>
+        <caption>Transliterationstabelle (Diakritika werden ignoriert)</caption>
+        <tr>
+          <td class="gr">α</td><td class="lat">a</td>
+          <td class="gr">η</td><td class="lat">h</td>
+          <td class="gr">ν</td><td class="lat">n</td>
+          <td class="gr">τ</td><td class="lat">t</td>
+        </tr>
+        <tr>
+          <td class="gr">β</td><td class="lat">b</td>
+          <td class="gr surprise">θ</td><td class="lat surprise">q</td>
+          <td class="gr surprise">ξ</td><td class="lat surprise">c</td>
+          <td class="gr">υ</td><td class="lat">u</td>
+        </tr>
+        <tr>
+          <td class="gr">γ</td><td class="lat">g</td>
+          <td class="gr">ι</td><td class="lat">i</td>
+          <td class="gr">ο</td><td class="lat">o</td>
+          <td class="gr">φ</td><td class="lat">f</td>
+        </tr>
+        <tr>
+          <td class="gr">δ</td><td class="lat">d</td>
+          <td class="gr">κ</td><td class="lat">k</td>
+          <td class="gr">π</td><td class="lat">p</td>
+          <td class="gr">χ</td><td class="lat">x</td>
+        </tr>
+        <tr>
+          <td class="gr">ε</td><td class="lat">e</td>
+          <td class="gr">λ</td><td class="lat">l</td>
+          <td class="gr">ρ</td><td class="lat">r</td>
+          <td class="gr surprise">ψ</td><td class="lat surprise">y</td>
+        </tr>
+        <tr>
+          <td class="gr">ζ</td><td class="lat">z</td>
+          <td class="gr">μ</td><td class="lat">m</td>
+          <td class="gr">σ/ς</td><td class="lat">s</td>
+          <td class="gr surprise">ω</td><td class="lat surprise">w</td>
+        </tr>
+      </table>
+      <div class="example">z.B. <span>yuxh</span> = ψυχή, <span>filosofia</span> = φιλοσοφία, <span>logos</span> = λόγος</div>
+    </div>
+  </div>
+  <div id="status" class="status">Suchbegriff eingeben — 98.893 Einträge</div>
+  <div id="results" class="results"></div>
+</div>
+<script>
+(function() {
+  const q = document.getElementById('q');
+  const resultsEl = document.getElementById('results');
+  const statusEl = document.getElementById('status');
+  const modeButtons = document.querySelectorAll('.modes button');
+  let mode = 'auto';
+  let timer = null;
+
+  // Front matter — loaded via Android bridge
+  const fmNav = document.getElementById('fm-nav');
+  const fmContent = document.getElementById('fm-content');
+  let fmData = null;
+  let fmOpen = null;
+
+  try {
+    const raw = Android.getFrontMatter();
+    const data = JSON.parse(raw);
+    fmData = data.sections;
+    fmData.forEach(function(s) {
+      const a = document.createElement('a');
+      a.textContent = s.title;
+      a.dataset.key = s.key;
+      a.addEventListener('click', function() { toggleFm(s.key); });
+      fmNav.appendChild(a);
+    });
+  } catch (e) {
+    console.error('Failed to load front matter:', e);
+  }
+
+  function toggleFm(key) {
+    if (fmOpen === key) {
+      fmContent.innerHTML = '';
+      fmOpen = null;
+      fmNav.querySelectorAll('a').forEach(function(a) { a.classList.remove('active'); });
+      return;
+    }
+    const section = fmData.find(function(s) { return s.key === key; });
+    fmContent.innerHTML = '<div class="front-matter">' + section.html + '</div>';
+    fmOpen = key;
+    fmNav.querySelectorAll('a').forEach(function(a) { a.classList.toggle('active', a.dataset.key === key); });
+  }
+
+  document.getElementById('help-btn').addEventListener('click', function() {
+    document.getElementById('translit-help').classList.toggle('open');
+  });
+
+  modeButtons.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      modeButtons.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      doSearch();
+    });
+  });
+
+  q.addEventListener('input', function() {
+    clearTimeout(timer);
+    timer = setTimeout(doSearch, 300);
+  });
+
+  function doSearch() {
+    const query = q.value.trim();
+    if (!query) {
+      resultsEl.innerHTML = '';
+      statusEl.textContent = 'Suchbegriff eingeben \u2014 98.893 Eintr\u00e4ge';
+      statusEl.style.display = '';
+      return;
+    }
+
+    statusEl.textContent = 'Suche l\u00e4uft\u2026';
+    statusEl.style.display = '';
+
+    // Run the bridge call asynchronously to avoid blocking the UI thread
+    setTimeout(function() {
+      try {
+        const raw = Android.search(query, mode);
+        const data = JSON.parse(raw);
+        render(data);
+      } catch (e) {
+        statusEl.textContent = 'Fehler bei der Suche';
+        console.error('Search error:', e);
+      }
+    }, 0);
+  }
+
+  function render(data) {
+    const results = data.results;
+    const mode_used = data.mode_used;
+    if (results.length === 0) {
+      resultsEl.innerHTML = '';
+      statusEl.textContent = 'Keine Ergebnisse gefunden';
+      statusEl.style.display = '';
+      return;
+    }
+
+    statusEl.style.display = 'none';
+    const modeLabels = {headword: 'Stichwort', transliteration: 'Transliteration', fulltext: 'Volltext'};
+    let html = '<div class="count">' + results.length + (results.length >= 50 ? '+' : '') + ' Ergebnisse (' + (modeLabels[mode_used] || mode_used) + ')</div>';
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      html += '<div class="entry"><div class="entry-head">' + esc(r.headword) + '</div><div class="entry-body">' + r.definition_html + '</div></div>';
+    }
+    resultsEl.innerHTML = html;
+    // Fix image paths to point to android assets
+    resultsEl.querySelectorAll('img').forEach(function(img) {
+      const src = img.getAttribute('src');
+      if (src && !src.startsWith('file:') && !src.startsWith('http')) {
+        img.src = 'file:///android_asset/res/' + src;
+      }
+    });
+  }
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+})();
+</script>
+</body>
+</html>
