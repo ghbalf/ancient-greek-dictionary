@@ -22,7 +22,7 @@ android/                # Android app (WebView + Kotlin)
 
 - **Greek headword search** — type Greek directly (e.g. λόγος)
 - **Transliteration search** — Latin keyboard input (e.g. logos → λόγος)
-- **German fulltext search** — find entries by definition content (FTS5)
+- **German fulltext search** — find entries by definition content (FTS4)
 - **Auto mode** — detects Greek vs. Latin input automatically
 - **Front matter** — original prefaces and abbreviation list
 

@@ -54,7 +54,7 @@ def search_fulltext(db, q, limit):
     return db.execute(
         """SELECT e.id, e.headword, e.definition_html
            FROM entries_fts fts JOIN entries e ON e.id = fts.rowid
-           WHERE entries_fts MATCH ? ORDER BY rank LIMIT ?""",
+           WHERE entries_fts MATCH ? ORDER BY length(e.definition_text) LIMIT ?""",
         (q, limit),
     ).fetchall()
 

@@ -118,8 +118,10 @@ def main():
     )
     conn.execute("CREATE INDEX idx_synonym ON synonyms(synonym)")
     conn.execute(
-        """CREATE VIRTUAL TABLE entries_fts USING fts5(
-            headword, definition_text, content=entries, content_rowid=id
+        # FTS4, not FTS5: Android's built-in SQLite ships without FTS5.
+        # External content maps docid to entries.rowid (= entries.id).
+        """CREATE VIRTUAL TABLE entries_fts USING fts4(
+            content="entries", headword, definition_text, tokenize=unicode61
         )"""
     )
 
@@ -140,6 +142,9 @@ def main():
     conn.execute("INSERT INTO entries_fts(entries_fts) VALUES('rebuild')")
 
     conn.commit()
+    # Ship without WAL so the file is self-contained when bundled in the APK
+    conn.execute("PRAGMA journal_mode=DELETE")
+    conn.execute("VACUUM")
     conn.close()
 
     print(f"\nDone! {len(records)} entries, {len(syn_rows)} synonyms.")

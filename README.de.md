@@ -22,7 +22,7 @@ android/                # Android-App (WebView + Kotlin)
 
 - **Griechische Stichwortsuche** — griechisch eingeben (z.B. λόγος)
 - **Transliterationssuche** — Eingabe über lateinische Tastatur (z.B. logos → λόγος)
-- **Deutsche Volltextsuche** — Einträge über Definitionstext finden (FTS5)
+- **Deutsche Volltextsuche** — Einträge über Definitionstext finden (FTS4)
 - **Automodus** — erkennt automatisch griechische vs. lateinische Eingabe
 - **Vorspann** — originale Vorreden und Abkürzungsverzeichnis
 

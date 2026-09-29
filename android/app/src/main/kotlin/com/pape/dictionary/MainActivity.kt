@@ -39,13 +39,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun copyDatabaseIfNeeded() {
         val dbFile = File(filesDir, "pape_dictionary.db")
-        if (dbFile.exists()) return
+        val versionFile = File(filesDir, "pape_dictionary.version")
+        val installed = if (versionFile.exists()) versionFile.readText().trim() else ""
+        if (dbFile.exists() && installed == DB_VERSION.toString()) return
 
+        // Copy to a temp file first so an interrupted copy never leaves a truncated DB
+        val tmpFile = File(filesDir, "pape_dictionary.db.tmp")
         assets.open("pape_dictionary.db").use { input ->
-            dbFile.outputStream().use { output ->
+            tmpFile.outputStream().use { output ->
                 input.copyTo(output)
             }
         }
+        File(filesDir, "pape_dictionary.db-wal").delete()
+        File(filesDir, "pape_dictionary.db-shm").delete()
+        check(tmpFile.renameTo(dbFile)) { "Could not install dictionary database" }
+        versionFile.writeText(DB_VERSION.toString())
+    }
+
+    companion object {
+        // Bump whenever the bundled database changes (2 = FTS4 fulltext index)
+        private const val DB_VERSION = 2
     }
 
     @Deprecated("Use OnBackPressedCallback", ReplaceWith("onBackPressedDispatcher"))
